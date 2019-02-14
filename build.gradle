@@ -1,0 +1,43 @@
+apply plugin: 'java-library'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compileOnly 'com.android.tools.lint:lint-api:26.3.0'
+    compileOnly 'com.android.tools.lint:lint-checks:26.3.0'
+    testCompile 'junit:junit:4.12'
+    testCompile 'com.android.tools.lint:lint:26.3.0'
+    testCompile 'com.android.tools.lint:lint-tests:26.3.0'
+    testCompile 'com.android.tools:testutils:26.3.0'
+}
+
+jar {
+    baseName 'com.takescoop.customlintrules'
+    version '1.0'
+
+    manifest {
+        attributes 'Manifest-Version': 1.0
+        attributes('Lint-Registry': 'com.takescoop.customlintrules.CustomIssueRegistry')
+    }
+}
+
+defaultTasks 'assemble'
+
+/**
+ * Copies the jar file containing your lint module
+ * into the .android/lint directory in your home folder.
+ * */
+task copyLintJar(type: Copy) {
+    description = 'Copies the lint jar file into the {user.home}/.android/lint folder.'
+    from('build/libs/')
+    into(System.getProperty("user.home") + '/.android/lint')
+    include("*.jar")
+}
+
+// Runs the copyLintJar task after build has completed.
+build.finalizedBy(copyLintJar)
